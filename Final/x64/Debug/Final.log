@@ -1,0 +1,6 @@
+﻿  Final.cpp
+E:\Other\c++\Final\Engine.h(59,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+E:\Other\c++\Final\Engine.h(93,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+E:\Other\c++\Final\Engine.h(97,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+E:\Other\c++\Final\Final.cpp(42,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Final.vcxproj -> E:\Other\c++\Final\x64\Debug\Final.exe
