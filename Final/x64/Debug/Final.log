@@ -1,6 +1,6 @@
 ﻿  Final.cpp
-E:\Other\c++\Final\Engine.h(59,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-E:\Other\c++\Final\Engine.h(93,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-E:\Other\c++\Final\Engine.h(97,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-E:\Other\c++\Final\Final.cpp(42,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  Final.vcxproj -> E:\Other\c++\Final\x64\Debug\Final.exe
+E:\git\emolod\Emolod\Final\Engine.h(64,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+E:\git\emolod\Emolod\Final\Engine.h(98,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+E:\git\emolod\Emolod\Final\Engine.h(102,1): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+E:\git\emolod\Emolod\Final\Final.cpp(45,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Final.vcxproj -> E:\git\emolod\Emolod\Final\x64\Debug\Final.exe

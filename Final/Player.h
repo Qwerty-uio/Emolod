@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include "Pearson.h"
-#include "SkillInterface.h"
 #include "Weapon.h"
 #include "Armor.h"
 

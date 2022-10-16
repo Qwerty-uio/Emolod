@@ -1,1 +1,2 @@
 E:\Other\c++\Final\x64\Debug\Final.exe
+E:\git\emolod\Emolod\Final\x64\Debug\Final.exe

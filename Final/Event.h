@@ -3,12 +3,12 @@
 #include <vector>
 #include "Player.h"
 #include "Monster.h"
-#include "SkillInterface.h"
 #include "Weapon.h"
 #include "Armor.h"
 #include "Engine.h"
 #include <string>
 #include <algorithm>
+#include "SkillInterface.h"
 
 using namespace std;
 
@@ -31,7 +31,7 @@ private:
 				cout << "You've bought " << weapon->getName() << " for " << weapon->getPrice() << endl;
 			}
 			else {
-				cout << "You don't have enough money";
+				cout << "You don't have enough money\n";
 			}
 		}
 		else if (itemNumber > 0) {
@@ -42,11 +42,11 @@ private:
 				cout << "You've bought " << armor->getName() << " for " << armor->getPrice() << endl;
 			}
 			else {
-				cout << "You don't have enough money";
+				cout << "You don't have enough money\n";
 			}
 		}
 		else {
-			cout << "Unknown item";
+			cout << "Unknown item\n";
 		}
 	}
 

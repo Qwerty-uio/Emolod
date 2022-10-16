@@ -7,8 +7,11 @@
 #include "Engine.h"
 #include "Event.h"
 #include "Player.h"
+#include "SkillInterface.h"
 
 using namespace std;
+
+
 
 
 class SaveLoad {
@@ -45,6 +48,11 @@ int main() {
 	Player* player = NULL;
 	Event* event = NULL;
 	//player=saveLoad->load();
+	
+
+
+
+
 	if (player == NULL) {
 		string name = "";
 		int category = 0;
@@ -63,6 +71,7 @@ int main() {
 		player = engine->createPlayer(name, category);
 		
 	}
+
 	event = new Event(player, engine);
 
 	do {
@@ -91,7 +100,8 @@ int main() {
 		player->regeneration(engine->random(player->getHP() / 5, player->getHPMax() /2));
 		cout << "Press ESC to stop game or press any other key to continue.\n";
 	} while (_getch()!=27);
-	//saveLoad->save(player);
+
+
 
 	return 1;
 }

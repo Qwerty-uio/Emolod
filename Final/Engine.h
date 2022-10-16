@@ -1,9 +1,9 @@
 #pragma once
+//#include "SkillInterface.h"
 #include <iostream>
 #include <vector>
 #include "Player.h"
 #include "Monster.h"
-#include "SkillInterface.h"
 #include "Weapon.h"
 #include "Armor.h"
 
@@ -14,7 +14,7 @@ private:
 	vector <string> monsterNames = { "Bogeyman","Vampire","Zombie", "Hydra","Chimera","Yeti","Dragon","Basilisk","Werewolf", "Gorgon" };
 	vector <string> armorNames = { "Leather Armor", "Golden Armor","Bronze Armor","Black Armor" };
 	vector <string> weaponNames = { "Sword", "Dagger", "Pike", "Axe", "Spear" };
-
+	//vector <SkillInterface*> skills;
 
 public:
 	int random(int min, int max) {
@@ -22,8 +22,10 @@ public:
 		return min + rand() % (max - min + 1);
 	}
 	Player* createPlayer(string name, int category) {
-
 		int str = random(4, 7), ag = random(4, 7), end = random(4, 7);
+		//SkillInterface* skill = new Hit();
+
+		//this->skills.push_back(skill);
 		switch (category)
 		{
 		case 1:
@@ -34,6 +36,9 @@ public:
 			break;
 		case 3:
 			ag += random(2, 5);
+			//skill = new DoubleHit();
+
+			//this->skills.push_back(skill);
 			break;
 		}
 
