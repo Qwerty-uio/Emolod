@@ -312,12 +312,13 @@ class StrongHit : public SkillInterface {
 	}
 };
 
-class Shield : public SkillInterface {
+class MeatShield : public SkillInterface {
 	void skill(Player* player, Monster* monster) override {
 		player->setEndurance(player->getEndurance() + 5);
+		player->setEnergy(player->getEnergy() - player->getLevel()*5/4 - 5);
 	}
 	void printName() override {
-		cout << "Shield";
+		cout << "Meat Shield";
 	}
 };
 
@@ -339,6 +340,18 @@ class DoubleHit : public SkillInterface {
 
 	void printName() override {
 		cout << "Double hit";
+	}
+};
+
+
+class Regenaration : public SkillInterface {
+	void skill(Player* player, Monster* monster) override {
+		player->regeneration(player->getHP() / 5+rand()%( player->getHP() / 5));
+		player->setEnergy(player->getEnergy() - player->getLevel() * 3 / 2 - 5);
+	}
+
+	void printName() override {
+		cout << "Regenaration";
 	}
 };
 
@@ -369,6 +382,9 @@ public:
 			break;
 		case 2:
 			end += random(2, 5);
+			skill = new MeatShield();
+
+			this->skills.push_back(skill);
 			break;
 		case 3:
 			ag += random(2, 5);
