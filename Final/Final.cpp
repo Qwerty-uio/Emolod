@@ -198,6 +198,14 @@ public:
 		}
 	}
 
+	void regenerationEnergy(int regenerate) {
+		energy += regenerate;
+		cout << "Regenerated " << regenerate << " energy.\n";
+		if (energy > energyMax) {
+			energy = energyMax;
+		}
+	}
+
 	void giveExperience(int exp) {
 		experience += exp;
 		while (experienceMax <= experience) {
@@ -210,7 +218,7 @@ public:
 		level += 1;
 		experienceMax += 90 + rand() % 21;
 		healthMax += rand() % 10;
-		energyMax += rand() % 10;
+		energyMax += rand() % 5;
 		strength += rand() % 4;
 		endurance += rand() % 4;
 		agility += rand() % 4;
@@ -284,13 +292,18 @@ public:
 
 class Hit : public SkillInterface {
 	void skill(Player* player, Monster* monster) override {
-		int playerDamage = monster->generateDefence(player->generateDamage());
-		if (playerDamage < 0) {
-			playerDamage = 0;
+		if (player->getEnergy() >= 5) {
+			int playerDamage = monster->generateDefence(player->generateDamage());
+			if (playerDamage < 0) {
+				playerDamage = 0;
+			}
+			cout << "You dealed monster " << playerDamage << ".\n";
+			monster->setHP(monster->getHP() - playerDamage);
+			player->setEnergy(player->getEnergy() - 5);
 		}
-		cout << "You dealed monster " << playerDamage << ".\n";
-		monster->setHP(monster->getHP() - playerDamage);
-		player->setEnergy(player->getEnergy() - player->getLevel() - 3);
+		else {
+			cout << "Too low energy\n";
+		}
 	}
 	void printName() override {
 		cout << "Common hit";
@@ -299,13 +312,18 @@ class Hit : public SkillInterface {
 
 class StrongHit : public SkillInterface {
 	void skill(Player* player, Monster* monster) override {
-		int playerDamage = monster->generateDefence(player->generateDamage()) * 7 / 4;
-		if (playerDamage < 0) {
-			playerDamage = 0;
+		if (player->getEnergy() >= 10) {
+			int playerDamage = monster->generateDefence(player->generateDamage()) * 7 / 4;
+			if (playerDamage < 0) {
+				playerDamage = 0;
+			}
+			cout << "You dealed monster " << playerDamage << ".\n";
+			monster->setHP(monster->getHP() - playerDamage);
+			player->setEnergy(player->getEnergy() - 10);
 		}
-		cout << "You dealed monster " << playerDamage << ".\n";
-		monster->setHP(monster->getHP() - playerDamage);
-		player->setEnergy(player->getEnergy() - player->getLevel() * 4 / 3 - 4);
+		else {
+			cout << "Too low energy\n";
+		}
 	}
 	void printName() override {
 		cout << "Strong hit";
@@ -314,8 +332,13 @@ class StrongHit : public SkillInterface {
 
 class MeatShield : public SkillInterface {
 	void skill(Player* player, Monster* monster) override {
-		player->setEndurance(player->getEndurance() + 5);
-		player->setEnergy(player->getEnergy() - player->getLevel()*5/4 - 5);
+		if (player->getEnergy() >= 10) {
+			player->setEndurance(player->getEndurance() + 5);
+			player->setEnergy(player->getEnergy() - 10);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
 	}
 	void printName() override {
 		cout << "Meat Shield";
@@ -325,17 +348,22 @@ class MeatShield : public SkillInterface {
 
 class DoubleHit : public SkillInterface {
 	void skill(Player* player, Monster* monster) override {
-		int playerDamage1 = monster->generateDefence(player->generateDamage());
-		if (playerDamage1 < 0) {
-			playerDamage1 = 0;
+		if (player->getEnergy() > 10) {
+			int playerDamage1 = monster->generateDefence(player->generateDamage());
+			if (playerDamage1 < 0) {
+				playerDamage1 = 0;
+			}
+			int playerDamage2 = monster->generateDefence(player->generateDamage());
+			if (playerDamage2 < 0) {
+				playerDamage2 = 0;
+			}
+			cout << "You dealed monster " << playerDamage1 << " and " << playerDamage2 << ".\n";
+			monster->setHP(monster->getHP() - playerDamage1 - playerDamage2);
+			player->setEnergy(player->getEnergy() - player->getLevel() - 10);
 		}
-		int playerDamage2 = monster->generateDefence(player->generateDamage());
-		if (playerDamage2 < 0) {
-			playerDamage2 = 0;
+		else {
+			cout << "Too low energy\n";
 		}
-		cout << "You dealed monster " << playerDamage1 << " and " << playerDamage2 << ".\n";
-		monster->setHP(monster->getHP() - playerDamage1 - playerDamage2);
-		player->setEnergy(player->getEnergy() - player->getLevel() * 3 / 2 - 5);
 	}
 
 	void printName() override {
@@ -346,14 +374,47 @@ class DoubleHit : public SkillInterface {
 
 class Regenaration : public SkillInterface {
 	void skill(Player* player, Monster* monster) override {
-		player->regeneration(player->getHP() / 5+rand()%( player->getHP() / 5));
-		player->setEnergy(player->getEnergy() - player->getLevel() * 3 / 2 - 5);
+		if (player->getEnergy() > 10) {
+			player->regeneration(player->getHP() / 5 + rand() % (player->getHP() / 5));
+			player->setEnergy(player->getEnergy() - 10);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
 	}
 
 	void printName() override {
 		cout << "Regenaration";
 	}
 };
+
+class SplitHit : public SkillInterface {
+	void skill(Player* player, Monster* monster) override {
+		if (player->getEnergy() >= 7) {
+			cout << "You dealed monster ";
+			for (int i = 0; i < 7; i++)
+			{
+				int playerDamage = monster->generateDefence(player->generateDamage());
+				if (playerDamage < 0) {
+					playerDamage = 0;
+				}
+				cout << playerDamage / 5 << " ";
+				
+				monster->setHP(monster->getHP() - playerDamage);
+			}
+			cout << "\n";
+			player->setEnergy(player->getEnergy() - 7);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
+	}
+	void printName() override {
+		cout << "Split hit";
+	}
+
+};
+
 
 class Engine {
 private:
@@ -370,7 +431,10 @@ public:
 	Player* createPlayer(string name, int category) {
 		int str = random(4, 7), ag = random(4, 7), end = random(4, 7);
 		SkillInterface* skill = new Hit();
-
+		this->skills.push_back(skill);
+		skill = new Regenaration();
+		this->skills.push_back(skill);
+		skill = new SplitHit();
 		this->skills.push_back(skill);
 		switch (category)
 		{
@@ -426,19 +490,20 @@ public:
 				skills[i]->printName();
 				cout << endl;
 			}
-			int skillNumber=0;
+			int skillNumber = 0;
 			cin >> skillNumber;
 			while (skillNumber <= 0 || skillNumber > skills.size()) {
-				cout << "!!!";
+				cout << "Unknown skill number.\n";
 				cin >> skillNumber;
 			}
-			skills[skillNumber - 1]->skill(player,monster);
+			skills[skillNumber - 1]->skill(player, monster);
 			int monsterDamage = player->generateDefence(monster->getDamage());
 			if (monsterDamage <= 0) {
 				monsterDamage = 1;
 			}
 			cout << "Monster dealed you " << monsterDamage << ".\n";
 			player->setHP(player->getHP() - monsterDamage);
+			player->regenerationEnergy(random(1, 7));
 		} while (monster->getHP() > 0 && player->getHP() > 0);
 		if (player->getHP() <= 0) {
 			cout << "You lost\n";
@@ -587,11 +652,11 @@ public:
 };
 
 class SaveLoad {
-private: 
+private:
 	Player* player = NULL;
 public:
 	Player* load() {
-		
+
 		ifstream load;
 		load.open("playerBase.txt");
 		if (load.is_open()) {
@@ -620,7 +685,7 @@ int main() {
 	Player* player = NULL;
 	Event* event = NULL;
 	//player=saveLoad->load();
-	
+
 	if (player == NULL) {
 		string name = "";
 		int category = 0;
@@ -637,7 +702,7 @@ int main() {
 		}
 
 		player = engine->createPlayer(name, category);
-		
+
 	}
 
 	event = new Event(player, engine);
@@ -645,12 +710,12 @@ int main() {
 	do {
 		int eventChance = rand() % 100;
 		if (eventChance < 5) {
-			event->shop(engine->random(3,7));
+			event->shop(engine->random(3, 7));
 		}
 		else if (eventChance < 45) {
 			event->meetMonster();
 		}
-		else if (eventChance<70)
+		else if (eventChance < 70)
 		{
 			event->hunting();
 		}
@@ -665,9 +730,9 @@ int main() {
 			//saveLoad->save(NULL);
 			return 0;
 		}
-		player->regeneration(engine->random(player->getHP() / 5, player->getHPMax() /2));
+		player->regeneration(engine->random(player->getHP() / 5, player->getHPMax() / 2));
 		cout << "Press ESC to stop game or press any other key to continue.\n";
-	} while (_getch()!=27);
+	} while (_getch() != 27);
 
 
 
