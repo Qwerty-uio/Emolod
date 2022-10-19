@@ -218,7 +218,7 @@ public:
 		level += 1;
 		experienceMax += 90 + rand() % 21;
 		healthMax += rand() % 10;
-		energyMax += rand() % 5;
+		energyMax += rand() % 3;
 		strength += rand() % 4;
 		endurance += rand() % 4;
 		agility += rand() % 4;
@@ -392,13 +392,14 @@ class SplitHit : public SkillInterface {
 	void skill(Player* player, Monster* monster) override {
 		if (player->getEnergy() >= 7) {
 			cout << "You dealed monster ";
-			for (int i = 0; i < 7; i++)
+			int hitsCounts= 4 + rand() % 5;
+			for (int i = 0; i < hitsCounts; i++)
 			{
 				int playerDamage = monster->generateDefence(player->generateDamage());
 				if (playerDamage < 0) {
 					playerDamage = 0;
 				}
-				cout << playerDamage / 5 << " ";
+				cout << playerDamage / 6 << " ";
 				
 				monster->setHP(monster->getHP() - playerDamage);
 			}
@@ -415,13 +416,40 @@ class SplitHit : public SkillInterface {
 
 };
 
+class PotionInterface {
+public:
+	virtual void drink(Player* player) = 0;
+};
+
+class HPPotion : public PotionInterface {
+	void drink(Player* player) override {
+		player->regeneration(50);
+		cout << "I'm drink hp potion" << endl;
+	}
+};
+
+class EnergyPotion : public PotionInterface {
+	void drink(Player* player) override {
+		player->regeneration(20);
+		cout << "I'm drink mp potion" << endl;
+	}
+};
+
+class ExperiencePotion : public PotionInterface {
+	void drink(Player* player) override {
+		player->giveExperience( 100);
+		cout << "I'm drink experience potion" << endl;
+	}
+};
+
 
 class Engine {
 private:
 	vector <string> monsterNames = { "Bogeyman","Vampire","Zombie", "Hydra","Chimera","Yeti","Dragon","Basilisk","Werewolf", "Gorgon" };
 	vector <string> armorNames = { "Leather Armor", "Golden Armor","Bronze Armor","Black Armor" };
 	vector <string> weaponNames = { "Sword", "Dagger", "Pike", "Axe", "Spear" };
-	vector <SkillInterface*> skills;
+
+	vector <SkillInterface*> playerSkills;
 
 public:
 	int random(int min, int max) {
@@ -431,30 +459,30 @@ public:
 	Player* createPlayer(string name, int category) {
 		int str = random(4, 7), ag = random(4, 7), end = random(4, 7);
 		SkillInterface* skill = new Hit();
-		this->skills.push_back(skill);
+		this->playerSkills.push_back(skill);
 		skill = new Regenaration();
-		this->skills.push_back(skill);
+		this->playerSkills.push_back(skill);
 		skill = new SplitHit();
-		this->skills.push_back(skill);
+		this->playerSkills.push_back(skill);
 		switch (category)
 		{
 		case 1:
 			str += random(2, 5);
-			skill = new DoubleHit();
+			skill = new StrongHit();
 
-			this->skills.push_back(skill);
+			this->playerSkills.push_back(skill);
 			break;
 		case 2:
 			end += random(2, 5);
 			skill = new MeatShield();
 
-			this->skills.push_back(skill);
+			this->playerSkills.push_back(skill);
 			break;
 		case 3:
 			ag += random(2, 5);
 			skill = new DoubleHit();
 
-			this->skills.push_back(skill);
+			this->playerSkills.push_back(skill);
 			break;
 		}
 
@@ -484,19 +512,18 @@ public:
 		cout << "You met a " << monster->getName() << endl;
 		do {
 			cout << "Your skills: \n";
-			for (int i = 0; i < skills.size(); i++)
+			for (int i = 0; i < playerSkills.size(); i++)
 			{
 				cout << i + 1 << ". ";
-				skills[i]->printName();
+				playerSkills[i]->printName();
 				cout << endl;
 			}
 			int skillNumber = 0;
 			cin >> skillNumber;
-			while (skillNumber <= 0 || skillNumber > skills.size()) {
+			if (skillNumber <= 0 || skillNumber > playerSkills.size()) {
 				cout << "Unknown skill number.\n";
-				cin >> skillNumber;
 			}
-			skills[skillNumber - 1]->skill(player, monster);
+			playerSkills[skillNumber - 1]->skill(player, monster);
 			int monsterDamage = player->generateDefence(monster->getDamage());
 			if (monsterDamage <= 0) {
 				monsterDamage = 1;
