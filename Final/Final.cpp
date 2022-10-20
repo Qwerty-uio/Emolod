@@ -424,14 +424,14 @@ public:
 class HPPotion : public PotionInterface {
 	void drink(Player* player) override {
 		player->regeneration(50);
-		cout << "I'm drink hp potion" << endl;
+		cout << "I'm drink HP potion" << endl;
 	}
 };
 
 class EnergyPotion : public PotionInterface {
 	void drink(Player* player) override {
-		player->regeneration(20);
-		cout << "I'm drink mp potion" << endl;
+		player->regenerationEnergy(20);
+		cout << "I'm drink energy potion" << endl;
 	}
 };
 
