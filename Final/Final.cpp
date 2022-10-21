@@ -125,6 +125,164 @@ public:
 	}
 };
 
+class SkillInterface {
+public:
+	virtual void skill(Player* player, Monster* monster) = 0;
+	virtual void printName() = 0;
+};
+
+class Hit : public SkillInterface {
+	void skill(Player* player, Monster* monster) override {
+		if (player->getEnergy() >= 5) {
+			int playerDamage = monster->generateDefence(player->generateDamage());
+			if (playerDamage < 0) {
+				playerDamage = 0;
+			}
+			cout << "You dealed monster " << playerDamage << ".\n";
+			monster->setHP(monster->getHP() - playerDamage);
+			player->setEnergy(player->getEnergy() - 5);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
+	}
+	void printName() override {
+		cout << "Common hit";
+	}
+};
+
+class StrongHit : public SkillInterface {
+	void skill(Player* player, Monster* monster) override {
+		if (player->getEnergy() >= 10) {
+			int playerDamage = monster->generateDefence(player->generateDamage()) * 7 / 4;
+			if (playerDamage < 0) {
+				playerDamage = 0;
+			}
+			cout << "You dealed monster " << playerDamage << ".\n";
+			monster->setHP(monster->getHP() - playerDamage);
+			player->setEnergy(player->getEnergy() - 10);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
+	}
+	void printName() override {
+		cout << "Strong hit";
+	}
+};
+
+class MeatShield : public SkillInterface {
+	void skill(Player* player, Monster* monster) override {
+		if (player->getEnergy() >= 10) {
+			player->setEndurance(player->getEndurance() + 5);
+			player->setEnergy(player->getEnergy() - 10);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
+	}
+	void printName() override {
+		cout << "Meat Shield";
+	}
+};
+
+
+class DoubleHit : public SkillInterface {
+	void skill(Player* player, Monster* monster) override {
+		if (player->getEnergy() > 10) {
+			int playerDamage1 = monster->generateDefence(player->generateDamage());
+			if (playerDamage1 < 0) {
+				playerDamage1 = 0;
+			}
+			int playerDamage2 = monster->generateDefence(player->generateDamage());
+			if (playerDamage2 < 0) {
+				playerDamage2 = 0;
+			}
+			cout << "You dealed monster " << playerDamage1 << " and " << playerDamage2 << ".\n";
+			monster->setHP(monster->getHP() - playerDamage1 - playerDamage2);
+			player->setEnergy(player->getEnergy() - player->getLevel() - 10);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
+	}
+
+	void printName() override {
+		cout << "Double hit";
+	}
+};
+
+
+class Regenaration : public SkillInterface {
+	void skill(Player* player, Monster* monster) override {
+		if (player->getEnergy() > 10) {
+			player->regeneration(player->getHP() / 5 + rand() % (player->getHP() / 5));
+			player->setEnergy(player->getEnergy() - 10);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
+	}
+
+	void printName() override {
+		cout << "Regenaration";
+	}
+};
+
+class SplitHit : public SkillInterface {
+	void skill(Player* player, Monster* monster) override {
+		if (player->getEnergy() >= 7) {
+			cout << "You dealed monster ";
+			int hitsCounts = 4 + rand() % 5;
+			for (int i = 0; i < hitsCounts; i++)
+			{
+				int playerDamage = monster->generateDefence(player->generateDamage());
+				if (playerDamage < 0) {
+					playerDamage = 0;
+				}
+				cout << playerDamage / 6 << " ";
+
+				monster->setHP(monster->getHP() - playerDamage);
+			}
+			cout << "\n";
+			player->setEnergy(player->getEnergy() - 7);
+		}
+		else {
+			cout << "Too low energy\n";
+		}
+	}
+	void printName() override {
+		cout << "Split hit";
+	}
+
+};
+
+class PotionInterface {
+public:
+	virtual void drink(Player* player) = 0;
+};
+
+class HPPotion : public PotionInterface {
+	void drink(Player* player) override {
+		player->regeneration(50);
+		cout << "I'm drink HP potion" << endl;
+	}
+};
+
+class EnergyPotion : public PotionInterface {
+	void drink(Player* player) override {
+		player->regenerationEnergy(20);
+		cout << "I'm drink energy potion" << endl;
+	}
+};
+
+class ExperiencePotion : public PotionInterface {
+	void drink(Player* player) override {
+		player->giveExperience(100);
+		cout << "I'm drink experience potion" << endl;
+	}
+};
+
 class Player : public Person {
 private:
 	int strength = 0;
@@ -135,7 +293,8 @@ private:
 	int cash = rand() % 20;
 	Weapon* weapon = NULL;
 	Armor* armor = NULL;
-
+	vector<SkillInterface*> skillList;
+	PotionInterface* potion = NULL;
 
 public:
 	Player(string name, int hp, int en, int str, int ag, int end, Weapon* weapon) : Person(name, 1, hp, en) {
@@ -145,6 +304,63 @@ public:
 		this->weapon = weapon;
 		this->armor = new Armor("None", 0, 0);
 	}
+
+	//----------------------------------//
+	bool addedSkill(SkillInterface* skill) {
+		if (skillList.size() < 3) {
+			skillList.push_back(skill);
+			return true;
+		} 
+
+		cout << "Error!!!!";
+		return false;
+	}
+
+	bool changeSkill(int position, SkillInterface* skill) {
+		if (position >= 0 && position < skillList.size()) {
+			cout << "Error!!!!";
+			return false;
+		}
+
+		skillList[position] = skill;
+		return true;
+	}
+
+	bool useSkill(int position, Monster* monster) {
+		if (position >= 0 && position < skillList.size()) {
+			cout << "Error!!!!";
+			return false;
+		}
+
+		skillList[position]->skill(this, monster);
+
+		return true;
+	}
+
+	void showSkillList() {
+		for (int i = 0; i < skillList.size(); i++) {
+			cout << i+1 << " ";
+			skillList[i]->printName();
+			cout << endl;
+		}
+	}
+	//----------------------------------//
+	void setPotion(PotionInterface* pi) {
+		this->potion = pi;
+	}
+
+	bool usePotion() {
+		if (this->potion == NULL) {
+			cout << "Error!!!!";
+			return false;
+		}
+
+		this->potion->drink(this);
+		this->potion = NULL;
+
+		return true;
+	}
+	//----------------------------------//
 
 	int getStr() {
 		return strength;
@@ -284,163 +500,9 @@ public:
 
 };
 
-class SkillInterface {
-public:
-	virtual void skill(Player* player, Monster* monster) = 0;
-	virtual void printName() = 0;
-};
-
-class Hit : public SkillInterface {
-	void skill(Player* player, Monster* monster) override {
-		if (player->getEnergy() >= 5) {
-			int playerDamage = monster->generateDefence(player->generateDamage());
-			if (playerDamage < 0) {
-				playerDamage = 0;
-			}
-			cout << "You dealed monster " << playerDamage << ".\n";
-			monster->setHP(monster->getHP() - playerDamage);
-			player->setEnergy(player->getEnergy() - 5);
-		}
-		else {
-			cout << "Too low energy\n";
-		}
-	}
-	void printName() override {
-		cout << "Common hit";
-	}
-};
-
-class StrongHit : public SkillInterface {
-	void skill(Player* player, Monster* monster) override {
-		if (player->getEnergy() >= 10) {
-			int playerDamage = monster->generateDefence(player->generateDamage()) * 7 / 4;
-			if (playerDamage < 0) {
-				playerDamage = 0;
-			}
-			cout << "You dealed monster " << playerDamage << ".\n";
-			monster->setHP(monster->getHP() - playerDamage);
-			player->setEnergy(player->getEnergy() - 10);
-		}
-		else {
-			cout << "Too low energy\n";
-		}
-	}
-	void printName() override {
-		cout << "Strong hit";
-	}
-};
-
-class MeatShield : public SkillInterface {
-	void skill(Player* player, Monster* monster) override {
-		if (player->getEnergy() >= 10) {
-			player->setEndurance(player->getEndurance() + 5);
-			player->setEnergy(player->getEnergy() - 10);
-		}
-		else {
-			cout << "Too low energy\n";
-		}
-	}
-	void printName() override {
-		cout << "Meat Shield";
-	}
-};
 
 
-class DoubleHit : public SkillInterface {
-	void skill(Player* player, Monster* monster) override {
-		if (player->getEnergy() > 10) {
-			int playerDamage1 = monster->generateDefence(player->generateDamage());
-			if (playerDamage1 < 0) {
-				playerDamage1 = 0;
-			}
-			int playerDamage2 = monster->generateDefence(player->generateDamage());
-			if (playerDamage2 < 0) {
-				playerDamage2 = 0;
-			}
-			cout << "You dealed monster " << playerDamage1 << " and " << playerDamage2 << ".\n";
-			monster->setHP(monster->getHP() - playerDamage1 - playerDamage2);
-			player->setEnergy(player->getEnergy() - player->getLevel() - 10);
-		}
-		else {
-			cout << "Too low energy\n";
-		}
-	}
 
-	void printName() override {
-		cout << "Double hit";
-	}
-};
-
-
-class Regenaration : public SkillInterface {
-	void skill(Player* player, Monster* monster) override {
-		if (player->getEnergy() > 10) {
-			player->regeneration(player->getHP() / 5 + rand() % (player->getHP() / 5));
-			player->setEnergy(player->getEnergy() - 10);
-		}
-		else {
-			cout << "Too low energy\n";
-		}
-	}
-
-	void printName() override {
-		cout << "Regenaration";
-	}
-};
-
-class SplitHit : public SkillInterface {
-	void skill(Player* player, Monster* monster) override {
-		if (player->getEnergy() >= 7) {
-			cout << "You dealed monster ";
-			int hitsCounts= 4 + rand() % 5;
-			for (int i = 0; i < hitsCounts; i++)
-			{
-				int playerDamage = monster->generateDefence(player->generateDamage());
-				if (playerDamage < 0) {
-					playerDamage = 0;
-				}
-				cout << playerDamage / 6 << " ";
-				
-				monster->setHP(monster->getHP() - playerDamage);
-			}
-			cout << "\n";
-			player->setEnergy(player->getEnergy() - 7);
-		}
-		else {
-			cout << "Too low energy\n";
-		}
-	}
-	void printName() override {
-		cout << "Split hit";
-	}
-
-};
-
-class PotionInterface {
-public:
-	virtual void drink(Player* player) = 0;
-};
-
-class HPPotion : public PotionInterface {
-	void drink(Player* player) override {
-		player->regeneration(50);
-		cout << "I'm drink HP potion" << endl;
-	}
-};
-
-class EnergyPotion : public PotionInterface {
-	void drink(Player* player) override {
-		player->regenerationEnergy(20);
-		cout << "I'm drink energy potion" << endl;
-	}
-};
-
-class ExperiencePotion : public PotionInterface {
-	void drink(Player* player) override {
-		player->giveExperience( 100);
-		cout << "I'm drink experience potion" << endl;
-	}
-};
 
 
 class Engine {
