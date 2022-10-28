@@ -72,6 +72,12 @@ public:
 	}
 };
 
+
+
+
+
+
+
 class Person {
 protected:
 	string name = "";
@@ -124,6 +130,58 @@ public:
 		this->energyMax = energyMax;
 	}
 };
+
+
+
+
+
+
+class Monster : public Person {
+private:
+	int damage = 0;
+	int defence = 0;
+	int experience = 0;
+	int money = 0;
+public:
+	Monster(string name, int hp, int en, int dmg, int def, int lvl, int exp, int money) : Person(name, lvl, hp, en) {
+		damage = dmg;
+		defence = def;
+		experience = exp;
+		this->money = money;
+	}
+
+	int getDamage() {
+		return this->damage * 2 / 3;
+	}
+	int getDefence() {
+		return this->defence;
+	}
+	int getExperience() {
+		return this->experience;
+	}
+	int getMoney() {
+		return this->money;
+	}
+	void setDamage(int damage) {
+		this->damage = damage;
+	}
+	void setDefence(int defence) {
+		this->defence = defence;
+	}
+	void setExperience(int experience) {
+		this->experience = experience;
+	}
+	int generateDefence(int damage) {
+
+		return damage - (defence) / 3;
+	}
+
+};
+
+
+
+
+
 
 class SkillInterface {
 public:
@@ -257,6 +315,11 @@ class SplitHit : public SkillInterface {
 
 };
 
+
+
+
+
+
 class PotionInterface {
 public:
 	virtual void drink(Player* player) = 0;
@@ -282,6 +345,8 @@ class ExperiencePotion : public PotionInterface {
 		cout << "I'm drink experience potion" << endl;
 	}
 };
+
+
 
 class Player : public Person {
 private:
@@ -458,50 +523,6 @@ public:
 	}
 };
 
-class Monster : public Person {
-private:
-	int damage = 0;
-	int defence = 0;
-	int experience = 0;
-	int money = 0;
-public:
-	Monster(string name, int hp, int en, int dmg, int def, int lvl, int exp, int money) : Person(name, lvl, hp, en) {
-		damage = dmg;
-		defence = def;
-		experience = exp;
-		this->money = money;
-	}
-
-	int getDamage() {
-		return this->damage * 2 / 3;
-	}
-	int getDefence() {
-		return this->defence;
-	}
-	int getExperience() {
-		return this->experience;
-	}
-	int getMoney() {
-		return this->money;
-	}
-	void setDamage(int damage) {
-		this->damage = damage;
-	}
-	void setDefence(int defence) {
-		this->defence = defence;
-	}
-	void setExperience(int experience) {
-		this->experience = experience;
-	}
-	int generateDefence(int damage) {
-
-		return damage - (defence) / 3;
-	}
-
-};
-
-
-
 
 
 
@@ -511,7 +532,6 @@ private:
 	vector <string> armorNames = { "Leather Armor", "Golden Armor","Bronze Armor","Black Armor" };
 	vector <string> weaponNames = { "Sword", "Dagger", "Pike", "Axe", "Spear" };
 
-	vector <SkillInterface*> playerSkills;
 
 public:
 	int random(int min, int max) {
@@ -520,31 +540,19 @@ public:
 	}
 	Player* createPlayer(string name, int category) {
 		int str = random(4, 7), ag = random(4, 7), end = random(4, 7);
-		SkillInterface* skill = new Hit();
-		this->playerSkills.push_back(skill);
-		skill = new Regenaration();
-		this->playerSkills.push_back(skill);
-		skill = new SplitHit();
-		this->playerSkills.push_back(skill);
 		switch (category)
 		{
 		case 1:
 			str += random(2, 5);
-			skill = new StrongHit();
-
-			this->playerSkills.push_back(skill);
+			
 			break;
 		case 2:
 			end += random(2, 5);
-			skill = new MeatShield();
 
-			this->playerSkills.push_back(skill);
 			break;
 		case 3:
 			ag += random(2, 5);
-			skill = new DoubleHit();
-
-			this->playerSkills.push_back(skill);
+			
 			break;
 		}
 
@@ -573,19 +581,12 @@ public:
 	void fight(Player* player, Monster* monster) {
 		cout << "You met a " << monster->getName() << endl;
 		do {
-			cout << "Your skills: \n";
-			for (int i = 0; i < playerSkills.size(); i++)
-			{
-				cout << i + 1 << ". ";
-				playerSkills[i]->printName();
-				cout << endl;
+			int playerDamage = monster->generateDefence(player->generateDamage());
+			if (playerDamage < 0) {
+				playerDamage = 0;
 			}
-			int skillNumber = 0;
-			cin >> skillNumber;
-			if (skillNumber <= 0 || skillNumber > playerSkills.size()) {
-				cout << "Unknown skill number.\n";
-			}
-			playerSkills[skillNumber - 1]->skill(player, monster);
+			cout << "You dealed monster " << playerDamage << ".\n";
+			monster->setHP(monster->getHP() - playerDamage);
 			int monsterDamage = player->generateDefence(monster->getDamage());
 			if (monsterDamage <= 0) {
 				monsterDamage = 1;
